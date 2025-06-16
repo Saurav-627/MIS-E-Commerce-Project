@@ -3,6 +3,13 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, UserProfile, Address
 
 
+class AddressInline(admin.TabularInline):
+    model = Address
+    extra = 1
+    fields = ['address_type', 'first_name', 'last_name', 'city', 'state', 'country', 'is_default']
+    readonly_fields = ['created_at', 'updated_at']
+
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     """
@@ -24,13 +31,9 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'first_name', 'last_name', 'phone_number', 'user_type')
         }),
     )
-
-
-class AddressInline(admin.TabularInline):
-    model = Address
-    extra = 0
-    fields = ['address_type', 'first_name', 'last_name', 'city', 'state', 'country', 'is_default']
-    readonly_fields = ['created_at', 'updated_at']
+    
+    # Add AddressInline here for UserAdmin
+    inlines = [AddressInline]
 
 
 @admin.register(UserProfile)
@@ -43,7 +46,8 @@ class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ['user__email', 'user__first_name', 'user__last_name', 'company', 'location']
     readonly_fields = ['created_at', 'updated_at']
     
-    inlines = [AddressInline]
+    # AddressInline should not be here
+    # Remove inlines from UserProfileAdmin as it's now in UserAdmin
 
 
 @admin.register(Address)
